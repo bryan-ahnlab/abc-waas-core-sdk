@@ -2,18 +2,18 @@
   "name": "abc-waas-core-sdk",
   "version": "0.0.1",
   "description": "ABC WaaS Core SDK for React/Next.js",
-  "main": "dist/index.cjs",
+  "main": "dist/index.mjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     "import": "./dist/index.mjs",
-    "require": "./dist/index.cjs"
+    "default": "./dist/index.mjs"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --clean --external react --external react-dom",
+    "build": "tsup src/index.ts --format esm --dts --clean --external react --external react-dom",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
