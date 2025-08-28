@@ -1,12 +1,5 @@
 // tsup.config.ts
 
-/**
- * tsup 빌드 설정 파일
- *
- * React/Next.js 개발자를 위한 SDK 빌드 설정
- * 현대적인 React 생태계는 ESM을 기본으로 사용하므로 ESM만 지원하도록 최적화
- */
-
 import { defineConfig } from "tsup";
 
 export default defineConfig({
