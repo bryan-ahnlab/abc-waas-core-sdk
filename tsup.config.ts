@@ -14,11 +14,10 @@ export default defineConfig({
   // src/index.ts에서 시작하여 의존성을 따라 번들링합니다
   entry: ["src/index.ts"],
 
-  // ESM 형식만 출력 (React/Next.js 생태계에 최적화)
-  // - Next.js 13+ App Router는 ESM을 기본으로 사용
-  // - React 18+의 새로운 기능들은 ESM 환경에서 최적화됨
-  // - Tree shaking이 ESM에서 더 효과적
-  format: ["esm"],
+  // ESM과 CJS 모두 출력 (최대 호환성을 위해)
+  // - "esm": ES Modules (import/export) - 최신 브라우저와 Node.js에서 사용
+  // - "cjs": CommonJS (require/module.exports) - 레거시 Node.js 환경에서 사용
+  format: ["esm", "cjs"],
 
   // TypeScript 타입 정의 파일 생성 설정
   dts: {
