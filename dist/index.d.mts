@@ -1,5 +1,5 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 interface AbcWaasConfigType {
     API_WAAS_MYABCWALLET_URL: string;
@@ -25,6 +25,10 @@ interface AbcWaasContextType {
     setAbcUser: (abcUser: any) => void;
     secureChannel: any;
     setSecureChannel: (secureChannel: any) => void;
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
+    error: Error | null;
+    setError: (error: Error | null) => void;
 }
 
 interface Props {
@@ -47,9 +51,7 @@ declare function useLogin(): {
     secureChannel: any;
     loginV2: (email: string, token: string, service: string) => Promise<void>;
     loading: boolean;
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     error: Error | null;
-    setError: React.Dispatch<React.SetStateAction<Error | null>>;
 };
 
 export { type AbcWaasConfigType, AbcWaasProvider, useAbcWaas, useLogin };

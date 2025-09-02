@@ -1,6 +1,6 @@
 // src/hooks/useLogin.ts
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useAbcWaas } from "@/hooks/useAbcWaas";
 import {
   createSecureChannel,
@@ -17,6 +17,7 @@ export function useLogin() {
 
     basicToken,
     setBasicToken,
+
     email,
     setEmail,
     token,
@@ -32,10 +33,12 @@ export function useLogin() {
     setAbcUser,
     secureChannel,
     setSecureChannel,
-  } = useAbcWaas();
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+    loading,
+    setLoading,
+    error,
+    setError,
+  } = useAbcWaas();
 
   const loginV2 = useCallback(
     async (email: string, token: string, service: string) => {
@@ -194,8 +197,6 @@ export function useLogin() {
 
     loginV2,
     loading,
-    setLoading,
     error,
-    setError,
   };
 }

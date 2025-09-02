@@ -40,6 +40,8 @@ var AbcWaasProvider = ({ config, children }) => {
   const [abcWallet, setAbcWalletState] = react.useState(null);
   const [abcUser, setAbcUserState] = react.useState(null);
   const [secureChannel, setSecureChannelState] = react.useState(null);
+  const [loading, setLoadingState] = react.useState(false);
+  const [error, setErrorState] = react.useState(null);
   const setBasicToken = react.useCallback((basicToken2) => {
     setBasicTokenState(basicToken2);
   }, []);
@@ -63,6 +65,12 @@ var AbcWaasProvider = ({ config, children }) => {
   }, []);
   const setSecureChannel = react.useCallback((secureChannel2) => {
     setSecureChannelState(secureChannel2);
+  }, []);
+  const setLoading = react.useCallback((loading2) => {
+    setLoadingState(loading2);
+  }, []);
+  const setError = react.useCallback((error2) => {
+    setErrorState(error2);
   }, []);
   const abcAuthState = react.useMemo(
     () => ({
@@ -100,11 +108,33 @@ var AbcWaasProvider = ({ config, children }) => {
     }),
     [secureChannel, setSecureChannel]
   );
+  const loadingState = react.useMemo(
+    () => ({
+      loading,
+      setLoading
+    }),
+    [loading, setLoading]
+  );
+  const errorState = react.useMemo(
+    () => ({
+      error,
+      setError
+    }),
+    [error, setError]
+  );
   const contextValue = react.useMemo(
-    () => __spreadValues(__spreadValues(__spreadValues(__spreadValues({
+    () => __spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues({
       config
-    }, abcAuthState), abcWalletState), abcUserState), secureChannelState),
-    [config, abcAuthState, abcUserState, abcWalletState, secureChannelState]
+    }, abcAuthState), abcWalletState), abcUserState), secureChannelState), loadingState), errorState),
+    [
+      config,
+      abcAuthState,
+      abcUserState,
+      abcWalletState,
+      secureChannelState,
+      loadingState,
+      errorState
+    ]
   );
   return /* @__PURE__ */ jsxRuntime.jsx(AbcWaasContext.Provider, { value: contextValue, children });
 };
@@ -300,10 +330,12 @@ function useLogin() {
     abcUser,
     setAbcUser,
     secureChannel,
-    setSecureChannel
+    setSecureChannel,
+    loading,
+    setLoading,
+    error,
+    setError
   } = useAbcWaas();
-  const [loading, setLoading] = react.useState(false);
-  const [error, setError] = react.useState(null);
   const loginV2 = react.useCallback(
     async (email2, token2, service2) => {
       try {
@@ -428,9 +460,7 @@ function useLogin() {
     secureChannel,
     loginV2,
     loading,
-    setLoading,
-    error,
-    setError
+    error
   };
 }
 

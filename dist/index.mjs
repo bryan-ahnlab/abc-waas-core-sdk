@@ -32,6 +32,8 @@ var AbcWaasProvider = ({ config, children }) => {
   const [abcWallet, setAbcWalletState] = useState(null);
   const [abcUser, setAbcUserState] = useState(null);
   const [secureChannel, setSecureChannelState] = useState(null);
+  const [loading, setLoadingState] = useState(false);
+  const [error, setErrorState] = useState(null);
   const setBasicToken = useCallback((basicToken2) => {
     setBasicTokenState(basicToken2);
   }, []);
@@ -55,6 +57,12 @@ var AbcWaasProvider = ({ config, children }) => {
   }, []);
   const setSecureChannel = useCallback((secureChannel2) => {
     setSecureChannelState(secureChannel2);
+  }, []);
+  const setLoading = useCallback((loading2) => {
+    setLoadingState(loading2);
+  }, []);
+  const setError = useCallback((error2) => {
+    setErrorState(error2);
   }, []);
   const abcAuthState = useMemo(
     () => ({
@@ -92,11 +100,33 @@ var AbcWaasProvider = ({ config, children }) => {
     }),
     [secureChannel, setSecureChannel]
   );
+  const loadingState = useMemo(
+    () => ({
+      loading,
+      setLoading
+    }),
+    [loading, setLoading]
+  );
+  const errorState = useMemo(
+    () => ({
+      error,
+      setError
+    }),
+    [error, setError]
+  );
   const contextValue = useMemo(
-    () => __spreadValues(__spreadValues(__spreadValues(__spreadValues({
+    () => __spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues({
       config
-    }, abcAuthState), abcWalletState), abcUserState), secureChannelState),
-    [config, abcAuthState, abcUserState, abcWalletState, secureChannelState]
+    }, abcAuthState), abcWalletState), abcUserState), secureChannelState), loadingState), errorState),
+    [
+      config,
+      abcAuthState,
+      abcUserState,
+      abcWalletState,
+      secureChannelState,
+      loadingState,
+      errorState
+    ]
   );
   return /* @__PURE__ */ jsx(AbcWaasContext.Provider, { value: contextValue, children });
 };
@@ -292,10 +322,12 @@ function useLogin() {
     abcUser,
     setAbcUser,
     secureChannel,
-    setSecureChannel
+    setSecureChannel,
+    loading,
+    setLoading,
+    error,
+    setError
   } = useAbcWaas();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const loginV2 = useCallback(
     async (email2, token2, service2) => {
       try {
@@ -420,9 +452,7 @@ function useLogin() {
     secureChannel,
     loginV2,
     loading,
-    setLoading,
-    error,
-    setError
+    error
   };
 }
 

@@ -19,6 +19,9 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
   const [abcUser, setAbcUserState] = useState<any>(null);
   const [secureChannel, setSecureChannelState] = useState<any>(null);
 
+  const [loading, setLoadingState] = useState<boolean>(false);
+  const [error, setErrorState] = useState<Error | null>(null);
+
   const setBasicToken = useCallback((basicToken: string | null) => {
     setBasicTokenState(basicToken);
   }, []);
@@ -49,6 +52,14 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
 
   const setSecureChannel = useCallback((secureChannel: any) => {
     setSecureChannelState(secureChannel);
+  }, []);
+
+  const setLoading = useCallback((loading: boolean) => {
+    setLoadingState(loading);
+  }, []);
+
+  const setError = useCallback((error: Error | null) => {
+    setErrorState(error);
   }, []);
 
   const abcAuthState = useMemo(
@@ -91,6 +102,22 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
     [secureChannel, setSecureChannel]
   );
 
+  const loadingState = useMemo(
+    () => ({
+      loading,
+      setLoading,
+    }),
+    [loading, setLoading]
+  );
+
+  const errorState = useMemo(
+    () => ({
+      error,
+      setError,
+    }),
+    [error, setError]
+  );
+
   const contextValue = useMemo(
     () => ({
       config,
@@ -98,8 +125,18 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
       ...abcWalletState,
       ...abcUserState,
       ...secureChannelState,
+      ...loadingState,
+      ...errorState,
     }),
-    [config, abcAuthState, abcUserState, abcWalletState, secureChannelState]
+    [
+      config,
+      abcAuthState,
+      abcUserState,
+      abcWalletState,
+      secureChannelState,
+      loadingState,
+      errorState,
+    ]
   );
 
   return (
