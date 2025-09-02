@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useCallback } from 'react';
+import { createContext, useState, useCallback, useMemo, useContext } from 'react';
 import { jsx } from 'react/jsx-runtime';
 import { p256 } from '@noble/curves/p256';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils';
@@ -6,42 +6,99 @@ import CryptoJS from 'crypto-js';
 import qs from 'qs';
 import mCache from 'memory-cache';
 
-// src/context/AbcWaasProvider.tsx
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 var AbcWaasContext = createContext(null);
 var AbcWaasProvider = ({ config, children }) => {
-  const [basicToken, setBasicToken] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [token, setToken] = useState(null);
-  const [service, setService] = useState(null);
-  const [abcAuth, setAbcAuth] = useState(null);
-  const [abcWallet, setAbcWallet] = useState(null);
-  const [abcUser, setAbcUser] = useState(null);
-  const [secureChannel, setSecureChannel] = useState(null);
-  return /* @__PURE__ */ jsx(
-    AbcWaasContext.Provider,
-    {
-      value: {
-        config,
-        basicToken,
-        setBasicToken,
-        email,
-        setEmail,
-        token,
-        setToken,
-        service,
-        setService,
-        abcAuth,
-        setAbcAuth,
-        abcWallet,
-        setAbcWallet,
-        abcUser,
-        setAbcUser,
-        secureChannel,
-        setSecureChannel
-      },
-      children
-    }
+  const [basicToken, setBasicTokenState] = useState(null);
+  const [email, setEmailState] = useState(null);
+  const [token, setTokenState] = useState(null);
+  const [service, setServiceState] = useState(null);
+  const [abcAuth, setAbcAuthState] = useState(null);
+  const [abcWallet, setAbcWalletState] = useState(null);
+  const [abcUser, setAbcUserState] = useState(null);
+  const [secureChannel, setSecureChannelState] = useState(null);
+  const setBasicToken = useCallback((basicToken2) => {
+    setBasicTokenState(basicToken2);
+  }, []);
+  const setEmail = useCallback((email2) => {
+    setEmailState(email2);
+  }, []);
+  const setToken = useCallback((token2) => {
+    setTokenState(token2);
+  }, []);
+  const setService = useCallback((service2) => {
+    setServiceState(service2);
+  }, []);
+  const setAbcAuth = useCallback((abcAuth2) => {
+    setAbcAuthState(abcAuth2);
+  }, []);
+  const setAbcWallet = useCallback((abcWallet2) => {
+    setAbcWalletState(abcWallet2);
+  }, []);
+  const setAbcUser = useCallback((abcUser2) => {
+    setAbcUserState(abcUser2);
+  }, []);
+  const setSecureChannel = useCallback((secureChannel2) => {
+    setSecureChannelState(secureChannel2);
+  }, []);
+  const abcAuthState = useMemo(
+    () => ({
+      basicToken,
+      setBasicToken,
+      abcAuth,
+      setAbcAuth
+    }),
+    [basicToken, abcAuth, setBasicToken, setAbcAuth]
   );
+  const abcWalletState = useMemo(
+    () => ({
+      abcWallet,
+      setAbcWallet,
+      abcUser,
+      setAbcUser
+    }),
+    [abcWallet, abcUser, setAbcWallet, setAbcUser]
+  );
+  const abcUserState = useMemo(
+    () => ({
+      email,
+      setEmail,
+      token,
+      setToken,
+      service,
+      setService
+    }),
+    [email, token, service, setEmail, setToken, setService]
+  );
+  const secureChannelState = useMemo(
+    () => ({
+      secureChannel,
+      setSecureChannel
+    }),
+    [secureChannel, setSecureChannel]
+  );
+  const contextValue = useMemo(
+    () => __spreadValues(__spreadValues(__spreadValues(__spreadValues({
+      config
+    }, abcAuthState), abcWalletState), abcUserState), secureChannelState),
+    [config, abcAuthState, abcUserState, abcWalletState, secureChannelState]
+  );
+  return /* @__PURE__ */ jsx(AbcWaasContext.Provider, { value: contextValue, children });
 };
 function useAbcWaas() {
   const context = useContext(AbcWaasContext);
@@ -108,7 +165,8 @@ async function createSecureChannel(config) {
     mCache.put(
       "secureChannel",
       { data: responseData, keyPair, secretKey },
-      20 * 60 * 1e3
+      30 * 60 * 1e3
+      // 30 minutes
     );
     sessionStorage.setItem("secureChannel", JSON.stringify(result));
     return result;

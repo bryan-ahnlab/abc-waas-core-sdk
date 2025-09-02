@@ -1,7 +1,7 @@
 // src/context/AbcWaasProvider.tsx
 
-import React, { ReactNode, useState } from "react";
-import { AbcWaasContext } from "./AbcWaasContext";
+import React, { ReactNode, useState, useMemo, useCallback } from "react";
+import { AbcWaasContext } from "@/context/AbcWaasContext";
 import type { AbcWaasConfigType } from "@/types/config";
 
 interface Props {
@@ -10,42 +10,100 @@ interface Props {
 }
 
 export const AbcWaasProvider = ({ config, children }: Props) => {
-  const [basicToken, setBasicToken] = useState<string | null>(null);
+  const [basicToken, setBasicTokenState] = useState<string | null>(null);
+  const [email, setEmailState] = useState<string | null>(null);
+  const [token, setTokenState] = useState<string | null>(null);
+  const [service, setServiceState] = useState<string | null>(null);
+  const [abcAuth, setAbcAuthState] = useState<any>(null);
+  const [abcWallet, setAbcWalletState] = useState<any>(null);
+  const [abcUser, setAbcUserState] = useState<any>(null);
+  const [secureChannel, setSecureChannelState] = useState<any>(null);
 
-  const [email, setEmail] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [service, setService] = useState<string | null>(null);
+  const setBasicToken = useCallback((basicToken: string | null) => {
+    setBasicTokenState(basicToken);
+  }, []);
 
-  const [abcAuth, setAbcAuth] = useState<any>(null);
-  const [abcWallet, setAbcWallet] = useState<any>(null);
-  const [abcUser, setAbcUser] = useState<any>(null);
-  const [secureChannel, setSecureChannel] = useState<any>(null);
+  const setEmail = useCallback((email: string | null) => {
+    setEmailState(email);
+  }, []);
+
+  const setToken = useCallback((token: string | null) => {
+    setTokenState(token);
+  }, []);
+
+  const setService = useCallback((service: string | null) => {
+    setServiceState(service);
+  }, []);
+
+  const setAbcAuth = useCallback((abcAuth: any) => {
+    setAbcAuthState(abcAuth);
+  }, []);
+
+  const setAbcWallet = useCallback((abcWallet: any) => {
+    setAbcWalletState(abcWallet);
+  }, []);
+
+  const setAbcUser = useCallback((abcUser: any) => {
+    setAbcUserState(abcUser);
+  }, []);
+
+  const setSecureChannel = useCallback((secureChannel: any) => {
+    setSecureChannelState(secureChannel);
+  }, []);
+
+  const abcAuthState = useMemo(
+    () => ({
+      basicToken,
+      setBasicToken,
+      abcAuth,
+      setAbcAuth,
+    }),
+    [basicToken, abcAuth, setBasicToken, setAbcAuth]
+  );
+
+  const abcWalletState = useMemo(
+    () => ({
+      abcWallet,
+      setAbcWallet,
+      abcUser,
+      setAbcUser,
+    }),
+    [abcWallet, abcUser, setAbcWallet, setAbcUser]
+  );
+
+  const abcUserState = useMemo(
+    () => ({
+      email,
+      setEmail,
+      token,
+      setToken,
+      service,
+      setService,
+    }),
+    [email, token, service, setEmail, setToken, setService]
+  );
+
+  const secureChannelState = useMemo(
+    () => ({
+      secureChannel,
+      setSecureChannel,
+    }),
+    [secureChannel, setSecureChannel]
+  );
+
+  const contextValue = useMemo(
+    () => ({
+      config,
+      ...abcAuthState,
+      ...abcWalletState,
+      ...abcUserState,
+      ...secureChannelState,
+    }),
+    [config, abcAuthState, abcUserState, abcWalletState, secureChannelState]
+  );
 
   return (
-    <AbcWaasContext.Provider
-      value={{
-        config,
-
-        basicToken,
-        setBasicToken,
-
-        email,
-        setEmail,
-        token,
-        setToken,
-        service,
-        setService,
-
-        abcAuth,
-        setAbcAuth,
-        abcWallet,
-        setAbcWallet,
-        abcUser,
-        setAbcUser,
-        secureChannel,
-        setSecureChannel,
-      }}
-    >
+    <AbcWaasContext.Provider value={contextValue}>
       {children}
     </AbcWaasContext.Provider>
   );

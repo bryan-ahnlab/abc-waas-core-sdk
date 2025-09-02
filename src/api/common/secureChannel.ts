@@ -69,7 +69,7 @@ export async function createSecureChannel(config: {
     mCache.put(
       "secureChannel",
       { data: responseData, keyPair, secretKey },
-      20 * 60 * 1000
+      30 * 60 * 1000 // 30 minutes
     );
     sessionStorage.setItem("secureChannel", JSON.stringify(result));
 
