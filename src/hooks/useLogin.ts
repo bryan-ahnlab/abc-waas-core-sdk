@@ -197,6 +197,8 @@ export function useLogin() {
 
     loginV2,
     loading,
+    setLoading,
     error,
+    setError,
   };
 }
