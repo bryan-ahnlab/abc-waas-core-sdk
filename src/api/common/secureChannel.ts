@@ -5,7 +5,7 @@ import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import CryptoJS from "crypto-js";
 import qs from "qs";
 import mCache from "memory-cache";
-import { safeParseJson } from "@/utilities/parser";
+import { parseJson } from "@/utilities/parser";
 
 export type SecureChannelType = {
   PrivateKey: string;
@@ -49,7 +49,7 @@ export async function createSecureChannel(config: {
 
     if (!response.ok)
       throw new Error(`Failed to create secure channel: ${response.status}`);
-    const responseData = await safeParseJson(response, "createSecureChannel");
+    const responseData = await parseJson(response, "createSecureChannel");
 
     const serverPubkey = hexToBytes(responseData.publickey);
     const shared = p256.getSharedSecret(keyPair.privateKey, serverPubkey);

@@ -9,7 +9,7 @@ import {
 import { postTokenLoginV2 } from "@/api/v2/auth";
 import { postMemberJoinV2 } from "@/api/v2/member";
 import { getMpcWalletsInfoV2, postMpcWalletsV2 } from "@/api/v2/wallet";
-import { safeParseJson } from "@/utilities/parser";
+import { parseJson } from "@/utilities/parser";
 
 export function useLogin() {
   const {
@@ -94,7 +94,7 @@ export function useLogin() {
             newToken,
             service
           );
-          const retryLoginData = await safeParseJson(
+          const retryLoginData = await parseJson(
             retryLogin,
             "postTokenLoginV2"
           ); // { access_token, refresh_token, token_type, expires_in }
@@ -122,7 +122,7 @@ export function useLogin() {
           devicePassword
         );
 
-        const createMpcWalletsData = await safeParseJson(
+        const createMpcWalletsData = await parseJson(
           createMpcWallets,
           "postMpcWalletsV2"
         );
@@ -144,7 +144,7 @@ export function useLogin() {
 
         const mpcWalletsInfo = await getMpcWalletsInfoV2(config, accessToken);
 
-        const mpcWalletsInfoData = await safeParseJson(
+        const mpcWalletsInfoData = await parseJson(
           mpcWalletsInfo,
           "getMpcWalletsInfoV2"
         );

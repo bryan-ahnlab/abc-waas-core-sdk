@@ -15,7 +15,7 @@
  * ```typescript
  * try {
  *   const response = await fetch('/api/data');
- *   const data = await safeParseJson(response, 'API 호출');
+ *   const data = await parseJson(response, 'API 호출');
  *   if (data !== null) {
  *     console.log('성공:', data);
  *   } else {
@@ -26,7 +26,7 @@
  * }
  * ```
  */
-export async function safeParseJson(
+export async function parseJson(
   response: Response,
   label: string = "Unknown Error"
 ) {
