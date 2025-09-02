@@ -11,9 +11,11 @@ interface Props {
 
 export const AbcWaasProvider = ({ config, children }: Props) => {
   const [basicToken, setBasicTokenState] = useState<string | null>(null);
+
   const [email, setEmailState] = useState<string | null>(null);
   const [token, setTokenState] = useState<string | null>(null);
   const [service, setServiceState] = useState<string | null>(null);
+
   const [abcAuth, setAbcAuthState] = useState<any>(null);
   const [abcWallet, setAbcWalletState] = useState<any>(null);
   const [abcUser, setAbcUserState] = useState<any>(null);

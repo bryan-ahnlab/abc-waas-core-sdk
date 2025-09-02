@@ -1,6 +1,6 @@
 {
   "name": "abc-waas-core-sdk",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "ABC WaaS Core SDK for React/Next.js",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
