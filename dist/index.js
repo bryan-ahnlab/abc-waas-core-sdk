@@ -60,7 +60,7 @@ function useAbcWaas() {
 }
 
 // src/utilities/parser.ts
-async function safeParseJson(response, label = "Unknown Error") {
+async function parseJson(response, label = "Unknown Error") {
   const text = await response.text();
   if (!text) {
     if (!response.ok) {
@@ -100,7 +100,7 @@ async function createSecureChannel(config) {
     );
     if (!response.ok)
       throw new Error(`Failed to create secure channel: ${response.status}`);
-    const responseData = await safeParseJson(response, "createSecureChannel");
+    const responseData = await parseJson(response, "createSecureChannel");
     const serverPubkey = utils.hexToBytes(responseData.publickey);
     const shared = p256.p256.getSharedSecret(keyPair.privateKey, serverPubkey);
     const sharedX = shared.slice(1, 33);
@@ -293,7 +293,7 @@ function useLogin() {
             newToken,
             service2
           );
-          const retryLoginData = await safeParseJson(
+          const retryLoginData = await parseJson(
             retryLogin,
             "postTokenLoginV2"
           );
@@ -314,7 +314,7 @@ function useLogin() {
           channelid,
           devicePassword
         );
-        const createMpcWalletsData = await safeParseJson(
+        const createMpcWalletsData = await parseJson(
           createMpcWallets,
           "postMpcWalletsV2"
         );
@@ -330,7 +330,7 @@ function useLogin() {
           JSON.stringify(createMpcWalletsData)
         );
         const mpcWalletsInfo = await getMpcWalletsInfoV2(config, accessToken);
-        const mpcWalletsInfoData = await safeParseJson(
+        const mpcWalletsInfoData = await parseJson(
           mpcWalletsInfo,
           "getMpcWalletsInfoV2"
         );
