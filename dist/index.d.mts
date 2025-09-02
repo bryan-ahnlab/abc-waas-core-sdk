@@ -51,7 +51,9 @@ declare function useLogin(): {
     secureChannel: any;
     loginV2: (email: string, token: string, service: string) => Promise<void>;
     loading: boolean;
+    setLoading: (loading: boolean) => void;
     error: Error | null;
+    setError: (error: Error | null) => void;
 };
 
 export { type AbcWaasConfigType, AbcWaasProvider, useAbcWaas, useLogin };

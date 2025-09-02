@@ -452,7 +452,9 @@ function useLogin() {
     secureChannel,
     loginV2,
     loading,
-    error
+    setLoading,
+    error,
+    setError
   };
 }
 
