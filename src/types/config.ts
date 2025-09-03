@@ -28,9 +28,4 @@ export interface AbcWaasContextType {
   setAbcUser: (abcUser: any) => void;
   secureChannel: any;
   setSecureChannel: (secureChannel: any) => void;
-
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-  error: Error | null;
-  setError: (error: Error | null) => void;
 }

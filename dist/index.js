@@ -330,12 +330,10 @@ function useLogin() {
     abcUser,
     setAbcUser,
     secureChannel,
-    setSecureChannel,
-    loading,
-    setLoading,
-    error,
-    setError
+    setSecureChannel
   } = useAbcWaas();
+  const [loading, setLoading] = react.useState(false);
+  const [error, setError] = react.useState(null);
   const loginV2 = react.useCallback(
     async (email2, token2, service2) => {
       try {
