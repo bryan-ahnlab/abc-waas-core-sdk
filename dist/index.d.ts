@@ -7,6 +7,13 @@ interface AbcWaasConfigType {
     CLIENT_ID: string;
     CLIENT_SECRET: string;
 }
+
+interface Props {
+    config: AbcWaasConfigType;
+    children: ReactNode;
+}
+declare const AbcWaasProvider: ({ config, children }: Props) => react_jsx_runtime.JSX.Element;
+
 interface AbcWaasContextType {
     config: AbcWaasConfigType;
     basicToken: string | null;
@@ -27,11 +34,7 @@ interface AbcWaasContextType {
     setSecureChannel: (secureChannel: any) => void;
 }
 
-interface Props {
-    config: AbcWaasConfigType;
-    children: ReactNode;
-}
-declare const AbcWaasProvider: ({ config, children }: Props) => react_jsx_runtime.JSX.Element;
+type UseLoginStatusType = "IDLE" | "LOADING" | "SUCCESS" | "FAILURE";
 
 declare function useAbcWaas(): AbcWaasContextType;
 
@@ -50,6 +53,8 @@ declare function useLogin(): {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     error: Error | null;
     setError: React.Dispatch<React.SetStateAction<Error | null>>;
+    status: UseLoginStatusType | null;
+    setStatus: React.Dispatch<React.SetStateAction<UseLoginStatusType | null>>;
 };
 
-export { type AbcWaasConfigType, AbcWaasProvider, useAbcWaas, useLogin };
+export { type AbcWaasConfigType, type AbcWaasContextType, AbcWaasProvider, type UseLoginStatusType, useAbcWaas, useLogin };

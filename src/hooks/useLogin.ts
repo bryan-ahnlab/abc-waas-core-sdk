@@ -1,6 +1,6 @@
 // src/hooks/useLogin.ts
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useAbcWaas } from "@/hooks/useAbcWaas";
 import {
   createSecureChannel,
@@ -10,6 +10,7 @@ import { postTokenLoginV2 } from "@/api/v2/auth";
 import { postMemberJoinV2 } from "@/api/v2/member";
 import { getMpcWalletsInfoV2, postMpcWalletsV2 } from "@/api/v2/wallet";
 import { parseJson } from "@/utilities/parser";
+import { UseLoginStatusType } from "@/types/hook";
 
 export function useLogin() {
   const {
@@ -37,12 +38,14 @@ export function useLogin() {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
+  const [status, setStatus] = useState<UseLoginStatusType | null>(null);
 
   const loginV2 = useCallback(
     async (email: string, token: string, service: string) => {
       try {
         setLoading(true);
         setError(null);
+        setStatus("LOADING");
 
         setEmail(email);
         setToken(token);
@@ -61,7 +64,7 @@ export function useLogin() {
           service
         );
 
-        const tryLoginData = await tryLogin.json(); // { access_token, refresh_token, token_type, expires_in }
+        const tryLoginData = await tryLogin.json(); // { access_token, refresh_token, token_type, expire_in }
 
         let accessToken = null;
 
@@ -78,15 +81,16 @@ export function useLogin() {
             token: newToken,
           } = JSON.parse(tryLoginData.msg);
 
-          const joinRes = await postMemberJoinV2(
+          const joinMember = await postMemberJoinV2(
             config,
             basicToken,
             email,
             sixcode,
             service
           );
-          if (!joinRes?.ok) {
-            throw new Error(JSON.stringify(joinRes));
+          if (!joinMember?.ok) {
+            setStatus("FAILURE");
+            throw new Error(JSON.stringify(joinMember));
           }
 
           const retryLogin = await postTokenLoginV2(
@@ -98,14 +102,18 @@ export function useLogin() {
           const retryLoginData = await parseJson(
             retryLogin,
             "postTokenLoginV2"
-          ); // { access_token, refresh_token, token_type, expires_in }
+          ); // { access_token, refresh_token, token_type, expire_in }
           if (!retryLogin.ok) {
+            setStatus("FAILURE");
             throw new Error(JSON.stringify(retryLoginData));
           }
 
           accessToken = retryLoginData.access_token;
           setAbcAuth(retryLoginData);
           sessionStorage.setItem("abcAuth", JSON.stringify(retryLoginData));
+        } else if (!tryLogin.ok) {
+          setStatus("FAILURE");
+          throw new Error(JSON.stringify(tryLoginData));
         }
 
         /*  */
@@ -128,12 +136,14 @@ export function useLogin() {
           "postMpcWalletsV2"
         );
         if (!createMpcWallets.ok) {
+          setStatus("FAILURE");
           throw new Error(JSON.stringify(createMpcWalletsData));
         }
         if (
           createMpcWalletsData.message ===
           "The token was expected to have 3 parts, but got 1."
         ) {
+          setStatus("FAILURE");
           throw new Error(JSON.stringify(createMpcWalletsData));
         }
 
@@ -150,33 +160,41 @@ export function useLogin() {
           "getMpcWalletsInfoV2"
         );
         if (!mpcWalletsInfo.ok) {
+          setStatus("FAILURE");
           throw new Error(JSON.stringify(mpcWalletsInfoData));
         }
         if (
           mpcWalletsInfoData.message ===
           "The token was expected to have 3 parts, but got 1."
         ) {
+          setStatus("FAILURE");
           throw new Error(JSON.stringify(mpcWalletsInfoData));
         }
         if (mpcWalletsInfoData.message === "MPC KeyShare Recover Error") {
+          setStatus("FAILURE");
           throw new Error(JSON.stringify(mpcWalletsInfoData));
         }
         if (mpcWalletsInfoData.message === "KeyShare generate failed.") {
+          setStatus("FAILURE");
           throw new Error(JSON.stringify(mpcWalletsInfoData));
         }
 
         setAbcUser(mpcWalletsInfoData);
         sessionStorage.setItem("abcUser", JSON.stringify(mpcWalletsInfoData));
 
+        setStatus("SUCCESS");
         return;
       } catch (error: any) {
         setError(error);
+        if (status !== "FAILURE") {
+          setStatus("FAILURE");
+        }
         throw error;
       } finally {
         setLoading(false);
       }
     },
-    [config]
+    [config, status]
   );
 
   return {
@@ -198,5 +216,7 @@ export function useLogin() {
     setLoading,
     error,
     setError,
+    status,
+    setStatus,
   };
 }
