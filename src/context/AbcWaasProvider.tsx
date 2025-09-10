@@ -30,7 +30,7 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
   }>({
     loading: false,
     error: null,
-    status: null,
+    status: "IDLE",
   });
 
   /* useLogout */
@@ -41,7 +41,7 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
   }>({
     loading: false,
     error: null,
-    status: null,
+    status: "IDLE",
   });
 
   const setBasicToken = useCallback((basicToken: string | null) => {

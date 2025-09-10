@@ -43,12 +43,12 @@ var AbcWaasProvider = ({ config, children }) => {
   const [loginInfo, setLoginInfoState] = react.useState({
     loading: false,
     error: null,
-    status: null
+    status: "IDLE"
   });
   const [logoutInfo, setLogoutInfoState] = react.useState({
     loading: false,
     error: null,
-    status: null
+    status: "IDLE"
   });
   const setBasicToken = react.useCallback((basicToken2) => {
     setBasicTokenState(basicToken2);

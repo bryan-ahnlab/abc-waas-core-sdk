@@ -35,12 +35,12 @@ var AbcWaasProvider = ({ config, children }) => {
   const [loginInfo, setLoginInfoState] = useState({
     loading: false,
     error: null,
-    status: null
+    status: "IDLE"
   });
   const [logoutInfo, setLogoutInfoState] = useState({
     loading: false,
     error: null,
-    status: null
+    status: "IDLE"
   });
   const setBasicToken = useCallback((basicToken2) => {
     setBasicTokenState(basicToken2);
