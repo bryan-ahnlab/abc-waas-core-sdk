@@ -11,3 +11,4 @@ export type { UseLoginStatusType } from "@/types/hook";
 // Hooks
 export { useAbcWaas } from "@/hooks/useAbcWaas";
 export { useLogin } from "@/hooks/useLogin";
+export { useLogout } from "@/hooks/useLogout";

@@ -35,6 +35,7 @@ interface AbcWaasContextType {
 }
 
 type UseLoginStatusType = "IDLE" | "LOADING" | "SUCCESS" | "FAILURE";
+type UseLogoutStatusType = "IDLE" | "LOADING" | "SUCCESS" | "FAILURE";
 
 declare function useAbcWaas(): AbcWaasContextType;
 
@@ -57,4 +58,14 @@ declare function useLogin(): {
     setStatus: React.Dispatch<React.SetStateAction<UseLoginStatusType | null>>;
 };
 
-export { type AbcWaasConfigType, type AbcWaasContextType, AbcWaasProvider, type UseLoginStatusType, useAbcWaas, useLogin };
+declare function useLogout(): {
+    logoutV2: () => Promise<void>;
+    loading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    error: Error | null;
+    setError: React.Dispatch<React.SetStateAction<Error | null>>;
+    status: UseLogoutStatusType | null;
+    setStatus: React.Dispatch<React.SetStateAction<UseLogoutStatusType | null>>;
+};
+
+export { type AbcWaasConfigType, type AbcWaasContextType, AbcWaasProvider, type UseLoginStatusType, useAbcWaas, useLogin, useLogout };

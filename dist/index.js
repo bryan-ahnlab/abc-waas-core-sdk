@@ -482,9 +482,69 @@ function useLogin() {
     setStatus
   };
 }
+function useLogout() {
+  const {
+    setBasicToken,
+    setEmail,
+    setToken,
+    setService,
+    setAbcAuth,
+    setAbcWallet,
+    setAbcUser,
+    setSecureChannel
+  } = useAbcWaas();
+  const [loading, setLoading] = react.useState(false);
+  const [error, setError] = react.useState(null);
+  const [status, setStatus] = react.useState(null);
+  const logoutV2 = react.useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setStatus("LOADING");
+      sessionStorage.removeItem("abcAuth");
+      sessionStorage.removeItem("abcWallet");
+      sessionStorage.removeItem("abcUser");
+      sessionStorage.removeItem("secureChannel");
+      setBasicToken(null);
+      setEmail(null);
+      setToken(null);
+      setService(null);
+      setAbcAuth(null);
+      setAbcWallet(null);
+      setAbcUser(null);
+      setSecureChannel(null);
+      setStatus("SUCCESS");
+    } catch (error2) {
+      setError(error2);
+      setStatus("FAILURE");
+      throw error2;
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    setBasicToken,
+    setEmail,
+    setToken,
+    setService,
+    setAbcAuth,
+    setAbcWallet,
+    setAbcUser,
+    setSecureChannel
+  ]);
+  return {
+    logoutV2,
+    loading,
+    setLoading,
+    error,
+    setError,
+    status,
+    setStatus
+  };
+}
 
 exports.AbcWaasProvider = AbcWaasProvider;
 exports.useAbcWaas = useAbcWaas;
 exports.useLogin = useLogin;
+exports.useLogout = useLogout;
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map

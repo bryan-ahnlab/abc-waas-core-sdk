@@ -474,7 +474,66 @@ function useLogin() {
     setStatus
   };
 }
+function useLogout() {
+  const {
+    setBasicToken,
+    setEmail,
+    setToken,
+    setService,
+    setAbcAuth,
+    setAbcWallet,
+    setAbcUser,
+    setSecureChannel
+  } = useAbcWaas();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState(null);
+  const logoutV2 = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setStatus("LOADING");
+      sessionStorage.removeItem("abcAuth");
+      sessionStorage.removeItem("abcWallet");
+      sessionStorage.removeItem("abcUser");
+      sessionStorage.removeItem("secureChannel");
+      setBasicToken(null);
+      setEmail(null);
+      setToken(null);
+      setService(null);
+      setAbcAuth(null);
+      setAbcWallet(null);
+      setAbcUser(null);
+      setSecureChannel(null);
+      setStatus("SUCCESS");
+    } catch (error2) {
+      setError(error2);
+      setStatus("FAILURE");
+      throw error2;
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    setBasicToken,
+    setEmail,
+    setToken,
+    setService,
+    setAbcAuth,
+    setAbcWallet,
+    setAbcUser,
+    setSecureChannel
+  ]);
+  return {
+    logoutV2,
+    loading,
+    setLoading,
+    error,
+    setError,
+    status,
+    setStatus
+  };
+}
 
-export { AbcWaasProvider, useAbcWaas, useLogin };
+export { AbcWaasProvider, useAbcWaas, useLogin, useLogout };
 //# sourceMappingURL=index.mjs.map
 //# sourceMappingURL=index.mjs.map
