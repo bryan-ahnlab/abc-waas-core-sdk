@@ -16,17 +16,18 @@ export function useLogout() {
     setAbcWallet,
     setAbcUser,
     setSecureChannel,
-  } = useAbcWaas();
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
-  const [status, setStatus] = useState<UseLogoutStatusType | null>(null);
+    logoutInfo,
+    setLogoutInfo,
+  } = useAbcWaas();
 
   const logoutV2 = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      setStatus("LOADING");
+      setLogoutInfo({
+        loading: true,
+        error: null,
+        status: "LOADING",
+      });
 
       sessionStorage.removeItem("abcAuth");
       sessionStorage.removeItem("abcWallet");
@@ -42,13 +43,24 @@ export function useLogout() {
       setAbcUser(null);
       setSecureChannel(null);
 
-      setStatus("SUCCESS");
+      setLogoutInfo({
+        loading: false,
+        error: null,
+        status: "SUCCESS",
+      });
     } catch (error: any) {
-      setError(error);
-      setStatus("FAILURE");
+      setLogoutInfo({
+        loading: false,
+        error: error,
+        status: "FAILURE",
+      });
       throw error;
     } finally {
-      setLoading(false);
+      setLogoutInfo({
+        loading: false,
+        error: null,
+        status: "IDLE",
+      });
     }
   }, [
     setBasicToken,
@@ -64,11 +76,7 @@ export function useLogout() {
   return {
     logoutV2,
 
-    loading,
-    setLoading,
-    error,
-    setError,
-    status,
-    setStatus,
+    logoutInfo,
+    setLogoutInfo,
   };
 }

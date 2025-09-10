@@ -32,8 +32,16 @@ var AbcWaasProvider = ({ config, children }) => {
   const [abcWallet, setAbcWalletState] = useState(null);
   const [abcUser, setAbcUserState] = useState(null);
   const [secureChannel, setSecureChannelState] = useState(null);
-  const [loading, setLoadingState] = useState(false);
-  const [error, setErrorState] = useState(null);
+  const [loginInfo, setLoginInfoState] = useState({
+    loading: false,
+    error: null,
+    status: null
+  });
+  const [logoutInfo, setLogoutInfoState] = useState({
+    loading: false,
+    error: null,
+    status: null
+  });
   const setBasicToken = useCallback((basicToken2) => {
     setBasicTokenState(basicToken2);
   }, []);
@@ -58,12 +66,18 @@ var AbcWaasProvider = ({ config, children }) => {
   const setSecureChannel = useCallback((secureChannel2) => {
     setSecureChannelState(secureChannel2);
   }, []);
-  const setLoading = useCallback((loading2) => {
-    setLoadingState(loading2);
-  }, []);
-  const setError = useCallback((error2) => {
-    setErrorState(error2);
-  }, []);
+  const setLoginInfo = useCallback(
+    (login) => {
+      setLoginInfoState(login);
+    },
+    []
+  );
+  const setLogoutInfo = useCallback(
+    (logout) => {
+      setLogoutInfoState(logout);
+    },
+    []
+  );
   const abcAuthState = useMemo(
     () => ({
       basicToken,
@@ -100,32 +114,32 @@ var AbcWaasProvider = ({ config, children }) => {
     }),
     [secureChannel, setSecureChannel]
   );
-  const loadingState = useMemo(
+  const loginState = useMemo(
     () => ({
-      loading,
-      setLoading
+      loginInfo,
+      setLoginInfo
     }),
-    [loading, setLoading]
+    [loginInfo, setLoginInfo]
   );
-  const errorState = useMemo(
+  const logoutState = useMemo(
     () => ({
-      error,
-      setError
+      logoutInfo,
+      setLogoutInfo
     }),
-    [error, setError]
+    [logoutInfo, setLogoutInfo]
   );
   const contextValue = useMemo(
     () => __spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues({
       config
-    }, abcAuthState), abcWalletState), abcUserState), secureChannelState), loadingState), errorState),
+    }, abcAuthState), abcWalletState), abcUserState), secureChannelState), loginState), logoutState),
     [
       config,
       abcAuthState,
       abcUserState,
       abcWalletState,
       secureChannelState,
-      loadingState,
-      errorState
+      loginState,
+      logoutState
     ]
   );
   return /* @__PURE__ */ jsx(AbcWaasContext.Provider, { value: contextValue, children });
@@ -322,17 +336,18 @@ function useLogin() {
     abcUser,
     setAbcUser,
     secureChannel,
-    setSecureChannel
+    setSecureChannel,
+    loginInfo,
+    setLoginInfo
   } = useAbcWaas();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [status, setStatus] = useState(null);
   const loginV2 = useCallback(
     async (email2, token2, service2) => {
       try {
-        setLoading(true);
-        setError(null);
-        setStatus("LOADING");
+        setLoginInfo({
+          loading: true,
+          error: null,
+          status: "LOADING"
+        });
         setEmail(email2);
         setToken(token2);
         setService(service2);
@@ -367,7 +382,11 @@ function useLogin() {
             service2
           );
           if (!(joinMember == null ? void 0 : joinMember.ok)) {
-            setStatus("FAILURE");
+            setLoginInfo({
+              loading: false,
+              error: new Error(JSON.stringify(joinMember)),
+              status: "FAILURE"
+            });
             throw new Error(JSON.stringify(joinMember));
           }
           const retryLogin = await postTokenLoginV2(
@@ -381,14 +400,22 @@ function useLogin() {
             "postTokenLoginV2"
           );
           if (!retryLogin.ok) {
-            setStatus("FAILURE");
+            setLoginInfo({
+              loading: false,
+              error: new Error(JSON.stringify(retryLoginData)),
+              status: "FAILURE"
+            });
             throw new Error(JSON.stringify(retryLoginData));
           }
           accessToken = retryLoginData.access_token;
           setAbcAuth(retryLoginData);
           sessionStorage.setItem("abcAuth", JSON.stringify(retryLoginData));
         } else if (!tryLogin.ok) {
-          setStatus("FAILURE");
+          setLoginInfo({
+            loading: false,
+            error: new Error(JSON.stringify(tryLoginData)),
+            status: "FAILURE"
+          });
           throw new Error(JSON.stringify(tryLoginData));
         }
         const channelid = secureChannel2.ChannelID;
@@ -406,11 +433,19 @@ function useLogin() {
           "postMpcWalletsV2"
         );
         if (!createMpcWallets.ok) {
-          setStatus("FAILURE");
+          setLoginInfo({
+            loading: false,
+            error: new Error(JSON.stringify(createMpcWalletsData)),
+            status: "FAILURE"
+          });
           throw new Error(JSON.stringify(createMpcWalletsData));
         }
         if (createMpcWalletsData.message === "The token was expected to have 3 parts, but got 1.") {
-          setStatus("FAILURE");
+          setLoginInfo({
+            loading: false,
+            error: new Error(JSON.stringify(createMpcWalletsData)),
+            status: "FAILURE"
+          });
           throw new Error(JSON.stringify(createMpcWalletsData));
         }
         setAbcWallet(createMpcWalletsData);
@@ -424,36 +459,61 @@ function useLogin() {
           "getMpcWalletsInfoV2"
         );
         if (!mpcWalletsInfo.ok) {
-          setStatus("FAILURE");
+          setLoginInfo({
+            loading: false,
+            error: new Error(JSON.stringify(mpcWalletsInfoData)),
+            status: "FAILURE"
+          });
           throw new Error(JSON.stringify(mpcWalletsInfoData));
         }
         if (mpcWalletsInfoData.message === "The token was expected to have 3 parts, but got 1.") {
-          setStatus("FAILURE");
+          setLoginInfo({
+            loading: false,
+            error: new Error(JSON.stringify(mpcWalletsInfoData)),
+            status: "FAILURE"
+          });
           throw new Error(JSON.stringify(mpcWalletsInfoData));
         }
         if (mpcWalletsInfoData.message === "MPC KeyShare Recover Error") {
-          setStatus("FAILURE");
+          setLoginInfo({
+            loading: false,
+            error: new Error(JSON.stringify(mpcWalletsInfoData)),
+            status: "FAILURE"
+          });
           throw new Error(JSON.stringify(mpcWalletsInfoData));
         }
         if (mpcWalletsInfoData.message === "KeyShare generate failed.") {
-          setStatus("FAILURE");
+          setLoginInfo({
+            loading: false,
+            error: new Error(JSON.stringify(mpcWalletsInfoData)),
+            status: "FAILURE"
+          });
           throw new Error(JSON.stringify(mpcWalletsInfoData));
         }
         setAbcUser(mpcWalletsInfoData);
         sessionStorage.setItem("abcUser", JSON.stringify(mpcWalletsInfoData));
-        setStatus("SUCCESS");
+        setLoginInfo({
+          loading: false,
+          error: null,
+          status: "SUCCESS"
+        });
         return;
-      } catch (error2) {
-        setError(error2);
-        if (status !== "FAILURE") {
-          setStatus("FAILURE");
-        }
-        throw error2;
+      } catch (error) {
+        setLoginInfo({
+          loading: false,
+          error,
+          status: "FAILURE"
+        });
+        throw error;
       } finally {
-        setLoading(false);
+        setLoginInfo({
+          loading: false,
+          error: null,
+          status: "IDLE"
+        });
       }
     },
-    [config, status]
+    [config]
   );
   return {
     config,
@@ -466,12 +526,8 @@ function useLogin() {
     abcUser,
     secureChannel,
     loginV2,
-    loading,
-    setLoading,
-    error,
-    setError,
-    status,
-    setStatus
+    loginInfo,
+    setLoginInfo
   };
 }
 function useLogout() {
@@ -483,16 +539,17 @@ function useLogout() {
     setAbcAuth,
     setAbcWallet,
     setAbcUser,
-    setSecureChannel
+    setSecureChannel,
+    logoutInfo,
+    setLogoutInfo
   } = useAbcWaas();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [status, setStatus] = useState(null);
   const logoutV2 = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      setStatus("LOADING");
+      setLogoutInfo({
+        loading: true,
+        error: null,
+        status: "LOADING"
+      });
       sessionStorage.removeItem("abcAuth");
       sessionStorage.removeItem("abcWallet");
       sessionStorage.removeItem("abcUser");
@@ -505,13 +562,24 @@ function useLogout() {
       setAbcWallet(null);
       setAbcUser(null);
       setSecureChannel(null);
-      setStatus("SUCCESS");
-    } catch (error2) {
-      setError(error2);
-      setStatus("FAILURE");
-      throw error2;
+      setLogoutInfo({
+        loading: false,
+        error: null,
+        status: "SUCCESS"
+      });
+    } catch (error) {
+      setLogoutInfo({
+        loading: false,
+        error,
+        status: "FAILURE"
+      });
+      throw error;
     } finally {
-      setLoading(false);
+      setLogoutInfo({
+        loading: false,
+        error: null,
+        status: "IDLE"
+      });
     }
   }, [
     setBasicToken,
@@ -525,12 +593,8 @@ function useLogout() {
   ]);
   return {
     logoutV2,
-    loading,
-    setLoading,
-    error,
-    setError,
-    status,
-    setStatus
+    logoutInfo,
+    setLogoutInfo
   };
 }
 

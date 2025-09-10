@@ -3,6 +3,7 @@
 import React, { ReactNode, useState, useMemo, useCallback } from "react";
 import { AbcWaasContext } from "@/context/AbcWaasContext";
 import type { AbcWaasConfigType } from "@/types/config";
+import { UseLoginStatusType, UseLogoutStatusType } from "@/types/hook";
 
 interface Props {
   config: AbcWaasConfigType;
@@ -21,8 +22,27 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
   const [abcUser, setAbcUserState] = useState<any>(null);
   const [secureChannel, setSecureChannelState] = useState<any>(null);
 
-  const [loading, setLoadingState] = useState<boolean>(false);
-  const [error, setErrorState] = useState<Error | null>(null);
+  /* useLogin */
+  const [loginInfo, setLoginInfoState] = useState<{
+    loading: boolean;
+    error: Error | null;
+    status: UseLoginStatusType | null;
+  }>({
+    loading: false,
+    error: null,
+    status: null,
+  });
+
+  /* useLogout */
+  const [logoutInfo, setLogoutInfoState] = useState<{
+    loading: boolean;
+    error: Error | null;
+    status: UseLogoutStatusType | null;
+  }>({
+    loading: false,
+    error: null,
+    status: null,
+  });
 
   const setBasicToken = useCallback((basicToken: string | null) => {
     setBasicTokenState(basicToken);
@@ -56,13 +76,29 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
     setSecureChannelState(secureChannel);
   }, []);
 
-  const setLoading = useCallback((loading: boolean) => {
-    setLoadingState(loading);
-  }, []);
+  /* useLogin */
+  const setLoginInfo = useCallback(
+    (login: {
+      loading: boolean;
+      error: Error | null;
+      status: UseLoginStatusType | null;
+    }) => {
+      setLoginInfoState(login);
+    },
+    []
+  );
 
-  const setError = useCallback((error: Error | null) => {
-    setErrorState(error);
-  }, []);
+  /* useLogout */
+  const setLogoutInfo = useCallback(
+    (logout: {
+      loading: boolean;
+      error: Error | null;
+      status: UseLogoutStatusType | null;
+    }) => {
+      setLogoutInfoState(logout);
+    },
+    []
+  );
 
   const abcAuthState = useMemo(
     () => ({
@@ -104,20 +140,22 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
     [secureChannel, setSecureChannel]
   );
 
-  const loadingState = useMemo(
+  /* useLogin */
+  const loginState = useMemo(
     () => ({
-      loading,
-      setLoading,
+      loginInfo,
+      setLoginInfo,
     }),
-    [loading, setLoading]
+    [loginInfo, setLoginInfo]
   );
 
-  const errorState = useMemo(
+  /* useLogout */
+  const logoutState = useMemo(
     () => ({
-      error,
-      setError,
+      logoutInfo,
+      setLogoutInfo,
     }),
-    [error, setError]
+    [logoutInfo, setLogoutInfo]
   );
 
   const contextValue = useMemo(
@@ -127,8 +165,8 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
       ...abcWalletState,
       ...abcUserState,
       ...secureChannelState,
-      ...loadingState,
-      ...errorState,
+      ...loginState,
+      ...logoutState,
     }),
     [
       config,
@@ -136,8 +174,8 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
       abcUserState,
       abcWalletState,
       secureChannelState,
-      loadingState,
-      errorState,
+      loginState,
+      logoutState,
     ]
   );
 

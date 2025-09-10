@@ -1,6 +1,7 @@
 // src/types/context.ts
 
 import { AbcWaasConfigType } from "@/types/config";
+import { UseLoginStatusType, UseLogoutStatusType } from "@/types/hook";
 
 export interface AbcWaasContextType {
   config: AbcWaasConfigType;
@@ -23,4 +24,36 @@ export interface AbcWaasContextType {
   setAbcUser: (abcUser: any) => void;
   secureChannel: any;
   setSecureChannel: (secureChannel: any) => void;
+
+  /* useLogin */
+  loginInfo: {
+    loading: boolean;
+    error: Error | null;
+    status: UseLoginStatusType | null;
+  };
+  setLoginInfo: ({
+    loading,
+    error,
+    status,
+  }: {
+    loading: boolean;
+    error: Error | null;
+    status: UseLoginStatusType | null;
+  }) => void;
+
+  /* useLogout */
+  logoutInfo: {
+    loading: boolean;
+    error: Error | null;
+    status: UseLogoutStatusType | null;
+  };
+  setLogoutInfo: ({
+    loading,
+    error,
+    status,
+  }: {
+    loading: boolean;
+    error: Error | null;
+    status: UseLogoutStatusType | null;
+  }) => void;
 }
