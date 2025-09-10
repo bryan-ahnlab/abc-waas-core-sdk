@@ -232,12 +232,6 @@ export function useLogin() {
           status: "FAILURE",
         });
         throw error;
-      } finally {
-        setLoginInfo({
-          loading: false,
-          error: null,
-          status: "IDLE",
-        });
       }
     },
     [config]

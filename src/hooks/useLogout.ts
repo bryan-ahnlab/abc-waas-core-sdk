@@ -55,12 +55,6 @@ export function useLogout() {
         status: "FAILURE",
       });
       throw error;
-    } finally {
-      setLogoutInfo({
-        loading: false,
-        error: null,
-        status: "IDLE",
-      });
     }
   }, [
     setBasicToken,
