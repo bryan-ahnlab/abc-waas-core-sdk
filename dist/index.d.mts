@@ -68,4 +68,4 @@ declare function useLogout(): {
     setStatus: React.Dispatch<React.SetStateAction<UseLogoutStatusType | null>>;
 };
 
-export { type AbcWaasConfigType, type AbcWaasContextType, AbcWaasProvider, type UseLoginStatusType, useAbcWaas, useLogin, useLogout };
+export { type AbcWaasConfigType, type AbcWaasContextType, AbcWaasProvider, type UseLoginStatusType, type UseLogoutStatusType, useAbcWaas, useLogin, useLogout };
