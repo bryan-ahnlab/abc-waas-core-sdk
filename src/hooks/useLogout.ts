@@ -1,6 +1,6 @@
 // src/hooks/useLogout.ts
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useAbcWaas } from "@/hooks/useAbcWaas";
 import { UseLogoutStatusType } from "@/types/hook";
 
