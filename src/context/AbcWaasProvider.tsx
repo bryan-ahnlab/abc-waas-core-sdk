@@ -1,6 +1,12 @@
 // src/context/AbcWaasProvider.tsx
 
-import React, { ReactNode, useState, useMemo, useCallback } from "react";
+import React, {
+  ReactNode,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+} from "react";
 import { AbcWaasContext } from "@/context/AbcWaasContext";
 import type { AbcWaasConfigType } from "@/types/config";
 import { UseLoginStatusType, UseLogoutStatusType } from "@/types/hook";
@@ -43,6 +49,65 @@ export const AbcWaasProvider = ({ config, children }: Props) => {
     error: null,
     status: "IDLE",
   });
+
+  useEffect(() => {
+    try {
+      const storedAbcAuth = sessionStorage.getItem("abcAuth");
+      const storedAbcWallet = sessionStorage.getItem("abcWallet");
+      const storedAbcUser = sessionStorage.getItem("abcUser");
+      const storedSecureChannel = sessionStorage.getItem("secureChannel");
+
+      if (config?.CLIENT_ID && config?.CLIENT_SECRET) {
+        const basicToken = btoa(`${config.CLIENT_ID}:${config.CLIENT_SECRET}`);
+        setBasicTokenState(basicToken);
+      }
+
+      if (storedAbcAuth) {
+        const abcAuthData = JSON.parse(storedAbcAuth);
+        setAbcAuthState(abcAuthData);
+      }
+
+      if (storedAbcWallet) {
+        const abcWalletData = JSON.parse(storedAbcWallet);
+        setAbcWalletState(abcWalletData);
+      }
+
+      if (storedAbcUser) {
+        const abcUserData = JSON.parse(storedAbcUser);
+        setAbcUserState(abcUserData);
+      }
+
+      if (storedSecureChannel) {
+        const secureChannelData = JSON.parse(storedSecureChannel);
+        setSecureChannelState(secureChannelData);
+      }
+
+      if (
+        storedAbcAuth &&
+        storedAbcWallet &&
+        storedAbcUser &&
+        storedSecureChannel
+      ) {
+        setLoginInfoState({
+          loading: false,
+          error: null,
+          status: "SUCCESS",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      sessionStorage.removeItem("abcAuth");
+      sessionStorage.removeItem("abcWallet");
+      sessionStorage.removeItem("abcUser");
+      sessionStorage.removeItem("secureChannel");
+
+      setBasicTokenState(null);
+      setAbcAuthState(null);
+      setAbcWalletState(null);
+      setAbcUserState(null);
+      setSecureChannelState(null);
+    }
+  }, [config]);
 
   const setBasicToken = useCallback((basicToken: string | null) => {
     setBasicTokenState(basicToken);

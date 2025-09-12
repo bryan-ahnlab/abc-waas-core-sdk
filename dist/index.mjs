@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback, useMemo, useContext } from 'react';
+import { createContext, useState, useEffect, useCallback, useMemo, useContext } from 'react';
 import { jsx } from 'react/jsx-runtime';
 import { p256 } from '@noble/curves/p256';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils';
@@ -42,6 +42,52 @@ var AbcWaasProvider = ({ config, children }) => {
     error: null,
     status: "IDLE"
   });
+  useEffect(() => {
+    try {
+      const storedAbcAuth = sessionStorage.getItem("abcAuth");
+      const storedAbcWallet = sessionStorage.getItem("abcWallet");
+      const storedAbcUser = sessionStorage.getItem("abcUser");
+      const storedSecureChannel = sessionStorage.getItem("secureChannel");
+      if ((config == null ? void 0 : config.CLIENT_ID) && (config == null ? void 0 : config.CLIENT_SECRET)) {
+        const basicToken2 = btoa(`${config.CLIENT_ID}:${config.CLIENT_SECRET}`);
+        setBasicTokenState(basicToken2);
+      }
+      if (storedAbcAuth) {
+        const abcAuthData = JSON.parse(storedAbcAuth);
+        setAbcAuthState(abcAuthData);
+      }
+      if (storedAbcWallet) {
+        const abcWalletData = JSON.parse(storedAbcWallet);
+        setAbcWalletState(abcWalletData);
+      }
+      if (storedAbcUser) {
+        const abcUserData = JSON.parse(storedAbcUser);
+        setAbcUserState(abcUserData);
+      }
+      if (storedSecureChannel) {
+        const secureChannelData = JSON.parse(storedSecureChannel);
+        setSecureChannelState(secureChannelData);
+      }
+      if (storedAbcAuth && storedAbcWallet && storedAbcUser && storedSecureChannel) {
+        setLoginInfoState({
+          loading: false,
+          error: null,
+          status: "SUCCESS"
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      sessionStorage.removeItem("abcAuth");
+      sessionStorage.removeItem("abcWallet");
+      sessionStorage.removeItem("abcUser");
+      sessionStorage.removeItem("secureChannel");
+      setBasicTokenState(null);
+      setAbcAuthState(null);
+      setAbcWalletState(null);
+      setAbcUserState(null);
+      setSecureChannelState(null);
+    }
+  }, [config]);
   const setBasicToken = useCallback((basicToken2) => {
     setBasicTokenState(basicToken2);
   }, []);
